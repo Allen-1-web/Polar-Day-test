@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Полярный День — Интернет‑магазин одежды</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="header">
+    <div class="container header__inner">
+      <div class="logo">Полярный День</div>
+      <nav class="nav">
+        <a href="#catalog">Каталог</a>
+        <a href="#cart">Корзина</a>
+        <a href="#checkout">Оформление</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="main">
+    <section class="hero">
+      <div class="container hero__inner">
+        <div>
+          <h1>Интернет‑магазин одежды «Полярный День»</h1>
+          <p class="hero__subtitle">
+            Версия V2. Выберите вещи, укажите размер и оформите заказ с самовывозом.
+          </p>
+          <p class="hero__subtitle">
+            Адрес магазина: г. Мурманск, пр-т Ленина, 15, ТЦ «Полярный День», 2 этаж. Время работы: ежедневно с 10:00 до 21:00.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section id="catalog" class="section">
+      <div class="container">
+        <h2>Каталог</h2>
+        <div id="product-list" class="product-list">
+          <!-- Карточки товаров будут добавлены скриптом -->
+        </div>
+      </div>
+    </section>
+
+    <section id="cart" class="section section--alt">
+      <div class="container">
+        <h2>Корзина</h2>
+        <div id="cart-empty" class="cart-empty">
+          Корзина пуста. Добавьте товары из каталога.
+        </div>
+        <div id="cart-items" class="cart-items hidden">
+          <!-- Строки корзины -->
+        </div>
+        <div id="cart-summary" class="cart-summary hidden">
+          <span>Итого: <span id="cart-total">0</span> ₽</span>
+          <button id="go-to-checkout" class="btn btn--primary">Перейти к оформлению</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="checkout" class="section">
+      <div class="container">
+        <h2>Оформление заказа</h2>
+        <p class="section__note">
+          Минимальные данные для оформления: имя, телефон, выбор способа оплаты. Доставка не предусмотрена — только самовывоз.
+        </p>
+
+        <form id="checkout-form" class="form">
+          <div class="form__grid">
+            <div class="form__group">
+              <label for="customer-name">Имя *</label>
+              <input id="customer-name" name="name" type="text" required placeholder="Как к вам обращаться" />
+            </div>
+
+            <div class="form__group">
+              <label for="customer-phone">Телефон *</label>
+              <input id="customer-phone" name="phone" type="tel" required placeholder="+7" />
+            </div>
+
+            <div class="form__group">
+              <label for="pickup-point">Пункт самовывоза *</label>
+              <select id="pickup-point" name="pickup" required>
+                <option value="">Выберите пункт</option>
+                <option value="center">Самовывоз — ТЦ «Полярный День», центр</option>
+                <option value="north">Самовывоз — ТЦ «Арктика», север</option>
+              </select>
+            </div>
+
+            <div class="form__group">
+              <span class="form__label">Способ оплаты *</span>
+              <div class="form__inline">
+                <label>
+                  <input type="radio" name="payment" value="cash" required />
+                  Наличные
+                </label>
+                <label>
+                  <input type="radio" name="payment" value="card" />
+                  Безналичная оплата (карта / телефон)
+                </label>
+              </div>
+            </div>
+
+            <div class="form__group form__group--full">
+              <label for="order-comment">Комментарий к заказу (необязательно)</label>
+              <textarea id="order-comment" name="comment" rows="3" placeholder="Например: удобное время самовывоза"></textarea>
+            </div>
+          </div>
+
+          <div class="form__footer">
+            <button type="submit" class="btn btn--primary">Подтвердить заказ</button>
+            <div id="order-status" class="order-status" aria-live="polite"></div>
+          </div>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer__inner">
+      <span>© Полярный День, магазин одежды (V2)</span>
+      <span>Адрес: г. Мурманск, пр-т Ленина, 15, ТЦ «Полярный День», 2 этаж. Время работы: 10:00–21:00, ежедневно.</span>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
+
