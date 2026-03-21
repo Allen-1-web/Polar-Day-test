@@ -26,9 +26,83 @@ const products = [
 ];
 
 const cart = [];
+const purchaseHistory = [];
+const HISTORY_STORAGE_KEY = "polar-day-purchase-history-v1";
 
 function formatPrice(value) {
   return value.toLocaleString("ru-RU");
+}
+
+function formatDate(dateISO) {
+  const date = new Date(dateISO);
+  return date.toLocaleString("ru-RU");
+}
+
+function paymentLabel(paymentCode) {
+  return paymentCode === "cash" ? "Наличные" : "Безналичная оплата";
+}
+
+function pickupLabel(pickupCode) {
+  if (pickupCode === "center") return "ТЦ «Полярный День», центр";
+  if (pickupCode === "north") return "ТЦ «Арктика», север";
+  return pickupCode;
+}
+
+function loadPurchaseHistory() {
+  const raw = window.localStorage.getItem(HISTORY_STORAGE_KEY);
+  if (!raw) return;
+
+  try {
+    const parsed = JSON.parse(raw);
+    if (Array.isArray(parsed)) {
+      purchaseHistory.splice(0, purchaseHistory.length, ...parsed);
+    }
+  } catch (error) {
+    console.warn("Не удалось прочитать историю покупок:", error);
+  }
+}
+
+function savePurchaseHistory() {
+  window.localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(purchaseHistory));
+}
+
+function updateHistoryUI() {
+  const emptyState = document.getElementById("history-empty");
+  const historyList = document.getElementById("history-list");
+
+  if (purchaseHistory.length === 0) {
+    emptyState.classList.remove("hidden");
+    historyList.classList.add("hidden");
+    historyList.innerHTML = "";
+    return;
+  }
+
+  emptyState.classList.add("hidden");
+  historyList.classList.remove("hidden");
+  historyList.innerHTML = "";
+
+  purchaseHistory.forEach((order, index) => {
+    const item = document.createElement("article");
+    item.className = "history-item";
+    item.innerHTML = `
+      <div class="history-item__head">
+        <div class="history-item__title">Заказ #${purchaseHistory.length - index}</div>
+        <div class="history-item__meta">${formatDate(order.createdAt)}</div>
+      </div>
+      <div class="history-item__meta">Покупатель: ${order.name}, телефон: ${order.phone}</div>
+      <div class="history-item__meta">Самовывоз: ${pickupLabel(order.pickup)} | Оплата: ${paymentLabel(order.payment)}</div>
+      <ul class="history-item__list">
+        ${order.items
+          .map(
+            (line) =>
+              `<li>${line.name} — размер ${line.size}, ${line.qty} шт., ${formatPrice(line.lineTotal)} ₽</li>`
+          )
+          .join("")}
+      </ul>
+      <div class="history-item__total">Итого: ${formatPrice(order.total)} ₽</div>
+    `;
+    historyList.appendChild(item);
+  });
 }
 
 function renderProducts() {
@@ -120,8 +194,10 @@ function scrollToCheckout() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+  loadPurchaseHistory();
   renderProducts();
   updateCartUI();
+  updateHistoryUI();
 
   const productList = document.getElementById("product-list");
   const cartItemsContainer = document.getElementById("cart-items");
@@ -212,12 +288,17 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    const orderSummary = cart
-      .map((item) => {
-        const product = products.find((p) => p.id === item.productId);
-        return `${product?.name} — ${item.size}, ${item.qty} шт.`;
-      })
-      .join("\n");
+    const orderItems = cart.map((item) => {
+      const product = products.find((p) => p.id === item.productId);
+      const lineTotal = (product?.price || 0) * item.qty;
+      return {
+        name: product?.name || "Товар",
+        size: item.size,
+        qty: item.qty,
+        lineTotal,
+      };
+    });
+    const orderTotal = orderItems.reduce((sum, line) => sum + line.lineTotal, 0);
 
     console.log("Новый заказ:", {
       name,
@@ -225,12 +306,28 @@ document.addEventListener("DOMContentLoaded", () => {
       pickup,
       payment,
       comment: formData.get("comment")?.toString(),
-      items: orderSummary,
+      items: orderItems,
+      total: orderTotal,
     });
+
+    purchaseHistory.unshift({
+      createdAt: new Date().toISOString(),
+      name,
+      phone,
+      pickup,
+      payment,
+      comment: formData.get("comment")?.toString() || "",
+      items: orderItems,
+      total: orderTotal,
+    });
+    savePurchaseHistory();
+    updateHistoryUI();
 
     statusEl.textContent = "Заказ подтверждён! Это черновая версия — данные никуда не отправляются.";
     statusEl.classList.add("order-status--success");
 
+    cart.splice(0, cart.length);
+    updateCartUI();
     checkoutForm.reset();
   });
 });
