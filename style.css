@@ -1,0 +1,230 @@
+/* Простые стили: удобно читать и менять под свой бренд */
+
+:root {
+  --bg: #0f1419;
+  --card: #1a2332;
+  --text: #e8eef4;
+  --muted: #8fa3b8;
+  --accent: #5eb3d4;
+  --accent-hover: #7cc8e6;
+  --danger: #e07a7a;
+  --radius: 10px;
+  --font: system-ui, "Segoe UI", sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--font);
+  background: linear-gradient(160deg, var(--bg) 0%, #152030 100%);
+  color: var(--text);
+  line-height: 1.5;
+}
+
+.header {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.header h1 {
+  margin: 0 0 0.25rem;
+  font-size: 1.75rem;
+}
+
+.tagline {
+  margin: 0 0 1rem;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.nav button {
+  cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: var(--card);
+  color: var(--text);
+  padding: 0.45rem 0.85rem;
+  border-radius: var(--radius);
+  font-size: 0.9rem;
+}
+
+.nav button:hover {
+  border-color: var(--accent);
+  color: var(--accent-hover);
+}
+
+.user-badge {
+  color: var(--accent);
+  font-size: 0.9rem;
+  margin-left: 0.25rem;
+}
+
+main {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+.screen h2 {
+  margin-top: 0;
+}
+
+.hint {
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin: 0.5rem 0 1rem;
+}
+
+.card {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  margin-bottom: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.card h3 {
+  margin-top: 0;
+}
+
+form label {
+  display: block;
+  margin-bottom: 0.75rem;
+  font-size: 0.9rem;
+}
+
+form input {
+  display: block;
+  width: 100%;
+  max-width: 320px;
+  margin-top: 0.35rem;
+  padding: 0.5rem 0.65rem;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: var(--bg);
+  color: var(--text);
+}
+
+form button[type="submit"],
+.btn-add {
+  margin-top: 0.5rem;
+  padding: 0.55rem 1rem;
+  border-radius: var(--radius);
+  border: none;
+  background: var(--accent);
+  color: #0a0f14;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+form button[type="submit"]:hover,
+.btn-add:hover {
+  background: var(--accent-hover);
+}
+
+.row {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.row label {
+  flex: 1;
+  min-width: 120px;
+}
+
+.catalog {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1rem;
+}
+
+.product {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.product h3 {
+  margin: 0 0 0.35rem;
+  font-size: 1.05rem;
+}
+
+.product .price {
+  color: var(--accent);
+  font-weight: 600;
+  margin: 0 0 0.75rem;
+}
+
+.cart-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1rem;
+}
+
+.cart-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.65rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  gap: 0.5rem;
+}
+
+.cart-line-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.cart-list button {
+  background: transparent;
+  border: 1px solid var(--danger);
+  color: var(--danger);
+  border-radius: 6px;
+  padding: 0.25rem 0.5rem;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+.total {
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+}
+
+.order {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.order .meta {
+  color: var(--muted);
+  font-size: 0.85rem;
+  margin-bottom: 0.5rem;
+}
+
+.toast {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  max-width: 280px;
+  padding: 0.75rem 1rem;
+  background: var(--card);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  font-size: 0.9rem;
+}

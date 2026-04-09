@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Полярный день — магазин</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="header">
+    <h1>Полярный день</h1>
+    <p class="tagline">Тёплая одежда для северных дней</p>
+    <nav class="nav" id="nav">
+      <!-- Кнопки переключают экраны; логика в app.js -->
+      <button type="button" data-screen="catalog">Каталог</button>
+      <button type="button" data-screen="cart">Корзина</button>
+      <button type="button" data-screen="history">История покупок</button>
+      <button type="button" data-screen="auth" id="btn-auth">Вход / Регистрация</button>
+      <span class="user-badge" id="user-badge" hidden></span>
+      <button type="button" id="btn-logout" hidden>Выйти</button>
+    </nav>
+  </header>
+
+  <main>
+    <!-- Экран: регистрация и вход -->
+    <section id="screen-auth" class="screen">
+      <h2>Аккаунт</h2>
+      <div class="card">
+        <h3>Регистрация</h3>
+        <form id="form-register">
+          <label>Email <input type="email" name="email" required autocomplete="email" /></label>
+          <label>Пароль <input type="password" name="password" required minlength="4" autocomplete="new-password" /></label>
+          <button type="submit">Зарегистрироваться</button>
+        </form>
+      </div>
+      <div class="card">
+        <h3>Вход</h3>
+        <form id="form-login">
+          <label>Email <input type="email" name="email" required autocomplete="username" /></label>
+          <label>Пароль <input type="password" name="password" required autocomplete="current-password" /></label>
+          <button type="submit">Войти</button>
+        </form>
+      </div>
+      <p class="hint">Учебный проект: пароли хранятся в браузере без шифрования. Так в продакшене нельзя.</p>
+    </section>
+
+    <!-- Экран: выбор товара (каталог) -->
+    <section id="screen-catalog" class="screen" hidden>
+      <h2>Каталог</h2>
+      <p class="hint">Нажмите «В корзину», чтобы добавить товар. Цены учебные.</p>
+      <div id="catalog-list" class="catalog"></div>
+    </section>
+
+    <!-- Экран: корзина и оплата -->
+    <section id="screen-cart" class="screen" hidden>
+      <h2>Корзина и оплата</h2>
+      <div id="cart-empty" class="hint">Корзина пуста. Добавьте товары из каталога.</div>
+      <div id="cart-block" hidden>
+        <ul id="cart-items" class="cart-list"></ul>
+        <p class="total">Итого: <strong id="cart-total">0</strong> ₽</p>
+        <div class="card">
+          <h3>Оплата (учебная симуляция)</h3>
+          <p class="hint">Реальных списаний нет. Для настоящей оплаты нужен банк или сервис (ЮKassa, Stripe и т.д.).</p>
+          <form id="form-pay">
+            <label>Имя на карте <input type="text" name="holder" required placeholder="ИВАН ИВАНОВ" /></label>
+            <label>Номер карты <input type="text" name="card" required inputmode="numeric" placeholder="0000 0000 0000 0000" maxlength="19" /></label>
+            <div class="row">
+              <label>Срок <input type="text" name="exp" required placeholder="MM/YY" maxlength="5" /></label>
+              <label>CVC <input type="password" name="cvc" required placeholder="123" maxlength="4" /></label>
+            </div>
+            <button type="submit">Оплатить и оформить заказ</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- Экран: история покупок -->
+    <section id="screen-history" class="screen" hidden>
+      <h2>История покупок</h2>
+      <p id="history-guest" class="hint">Войдите, чтобы видеть свои заказы.</p>
+      <div id="history-list" hidden></div>
+    </section>
+  </main>
+
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
