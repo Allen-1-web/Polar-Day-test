@@ -33,6 +33,22 @@ function writeJson(key, value) {
   localStorage.setItem(key, JSON.stringify(value));
 }
 
+function isPlainObject(v) {
+  return Boolean(v) && typeof v === "object" && !Array.isArray(v);
+}
+
+function normalizeSpaces(s) {
+  return String(s || "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function looksLikeEmail(email) {
+  // Упрощённая проверка: достаточно для учебного примера
+  const s = String(email || "").trim();
+  return s.includes("@") && s.includes(".") && s.length <= 254;
+}
+
 function getSessionEmail() {
   return readJson(LS_SESSION, null);
 }
@@ -51,7 +67,9 @@ function ordersKey(email) {
 }
 
 function getUsers() {
-  return readJson(LS_USERS, {});
+  // Edge case #1: localStorage может быть испорчен (не объект / null / массив)
+  const users = readJson(LS_USERS, {});
+  return isPlainObject(users) ? users : {};
 }
 
 function saveUsers(users) {
@@ -74,6 +92,16 @@ function updateUser(email, patch) {
 
 function computeDefaultDisplayName(email) {
   return (email || "").split("@")[0] || "Пользователь";
+}
+
+function normalizeDisplayName(name) {
+  // Edge case #2: имя может быть пустым/из пробелов/слишком длинным
+  const n = normalizeSpaces(name);
+  if (n.length < 2) return null;
+  if (n.length > 40) return null;
+  // Edge case #3: попытка "вставить HTML" (в UI мы всегда используем textContent, но режем и тут)
+  if (/[<>]/.test(n)) return null;
+  return n;
 }
 
 /** Корзина: массив { id, qty } */
@@ -155,6 +183,13 @@ function renderAccount() {
     const u = getUser(email);
     profileForm.displayName.value = (u && u.displayName) ? u.displayName : computeDefaultDisplayName(email);
     return;
+  }
+
+  // Edge case #4: в localStorage есть "битая" сессия (email в сессии есть, а пользователя нет)
+  if (email && !getUser(email)) {
+    setSessionEmail(null);
+    refreshHeader();
+    showToast("Сессия устарела, войдите снова");
   }
 
   // Иначе оставляем классические формы входа/регистрации
@@ -361,10 +396,22 @@ function renderHistory() {
 // --- Обработчики форм регистрации и входа
 document.getElementById("form-register").addEventListener("submit", (e) => {
   e.preventDefault();
+  // Edge case #5: скрытую форму всё равно можно отправить (например, через devtools)
+  if (getSessionEmail()) {
+    showToast("Вы уже вошли");
+    return;
+  }
   const fd = new FormData(e.target);
   const email = String(fd.get("email")).trim().toLowerCase();
   const password = String(fd.get("password"));
-  if (!email || !password) return;
+  if (!looksLikeEmail(email)) {
+    showToast("Введите корректный email");
+    return;
+  }
+  if (!password || password.length < 4) {
+    showToast("Пароль слишком короткий");
+    return;
+  }
 
   const users = getUsers();
   if (users[email]) {
@@ -389,9 +436,17 @@ document.getElementById("form-register").addEventListener("submit", (e) => {
 
 document.getElementById("form-login").addEventListener("submit", (e) => {
   e.preventDefault();
+  if (getSessionEmail()) {
+    showToast("Вы уже вошли");
+    return;
+  }
   const fd = new FormData(e.target);
   const email = String(fd.get("email")).trim().toLowerCase();
   const password = String(fd.get("password"));
+  if (!looksLikeEmail(email)) {
+    showToast("Введите корректный email");
+    return;
+  }
   const users = getUsers();
   const u = users[email];
   if (!u || u.password !== password) {
@@ -424,9 +479,9 @@ document.getElementById("form-profile").addEventListener("submit", (e) => {
   const email = getSessionEmail();
   if (!email) return;
   const fd = new FormData(e.target);
-  const displayName = String(fd.get("displayName") || "").trim();
-  if (displayName.length < 2) {
-    showToast("Имя слишком короткое");
+  const displayName = normalizeDisplayName(fd.get("displayName"));
+  if (!displayName) {
+    showToast("Введите имя 2–40 символов без < >");
     return;
   }
   if (!updateUser(email, { displayName })) {
