@@ -1,15 +1,20 @@
-/* Простые стили: удобно читать и менять под свой бренд */
+/* Базовые стили: минимально, но современно */
 
 :root {
-  --bg: #0f1419;
-  --card: #1a2332;
-  --text: #e8eef4;
-  --muted: #8fa3b8;
-  --accent: #5eb3d4;
-  --accent-hover: #7cc8e6;
-  --danger: #e07a7a;
-  --radius: 10px;
-  --font: system-ui, "Segoe UI", sans-serif;
+  --bg0: #070a12;
+  --bg1: #0b1220;
+  --surface: rgba(255, 255, 255, 0.06);
+  --surface-strong: rgba(255, 255, 255, 0.08);
+  --border: rgba(255, 255, 255, 0.12);
+  --text: rgba(255, 255, 255, 0.92);
+  --muted: rgba(255, 255, 255, 0.68);
+  --accent: #7dd3fc;
+  --accent-strong: #38bdf8;
+  --danger: #fb7185;
+  --radius: 12px;
+  --radius-lg: 16px;
+  --shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
+  --font: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
 }
 
 * {
@@ -20,23 +25,49 @@ body {
   margin: 0;
   min-height: 100vh;
   font-family: var(--font);
-  background: linear-gradient(160deg, var(--bg) 0%, #152030 100%);
+  background:
+    radial-gradient(1200px 600px at 20% -10%, rgba(56, 189, 248, 0.25), transparent 60%),
+    radial-gradient(900px 500px at 90% 10%, rgba(125, 211, 252, 0.16), transparent 55%),
+    linear-gradient(180deg, var(--bg0), var(--bg1));
   color: var(--text);
   line-height: 1.5;
 }
 
 .header {
-  padding: 1.25rem 1.5rem;
+  position: sticky;
+  top: 0;
+  z-index: 10;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(7, 10, 18, 0.55);
+  backdrop-filter: blur(14px);
+}
+
+.container {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+.header-inner {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 1rem 0;
+}
+
+.brand {
+  min-width: 220px;
 }
 
 .header h1 {
-  margin: 0 0 0.25rem;
-  font-size: 1.75rem;
+  margin: 0 0 0.2rem;
+  font-size: 1.4rem;
+  letter-spacing: -0.02em;
 }
 
 .tagline {
-  margin: 0 0 1rem;
+  margin: 0;
   color: var(--muted);
   font-size: 0.95rem;
 }
@@ -46,37 +77,52 @@ body {
   flex-wrap: wrap;
   gap: 0.5rem;
   align-items: center;
+  justify-content: flex-end;
 }
 
-.nav button {
+.nav-spacer {
+  flex: 1;
+  min-width: 0.25rem;
+}
+
+.nav-btn {
   cursor: pointer;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  background: var(--card);
+  border: 1px solid var(--border);
+  background: var(--surface);
   color: var(--text);
-  padding: 0.45rem 0.85rem;
+  padding: 0.5rem 0.9rem;
   border-radius: var(--radius);
   font-size: 0.9rem;
+  transition: transform 120ms ease, background 120ms ease, border-color 120ms ease;
 }
 
-.nav button:hover {
-  border-color: var(--accent);
-  color: var(--accent-hover);
+.nav-btn:hover {
+  border-color: rgba(125, 211, 252, 0.45);
+  background: var(--surface-strong);
+  transform: translateY(-1px);
 }
 
-.user-badge {
-  color: var(--accent);
-  font-size: 0.9rem;
-  margin-left: 0.25rem;
+.nav-btn:focus-visible {
+  outline: 2px solid rgba(125, 211, 252, 0.8);
+  outline-offset: 2px;
+}
+
+.nav-btn.is-active {
+  border-color: rgba(125, 211, 252, 0.65);
+  background: rgba(125, 211, 252, 0.14);
+}
+
+.nav-btn-ghost {
+  background: transparent;
 }
 
 main {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 1.5rem;
+  padding: 1.75rem 0 2.25rem;
 }
 
 .screen h2 {
   margin-top: 0;
+  letter-spacing: -0.02em;
 }
 
 .hint {
@@ -86,11 +132,12 @@ main {
 }
 
 .card {
-  background: var(--card);
-  border-radius: var(--radius);
+  background: var(--surface);
+  border-radius: var(--radius-lg);
   padding: 1.25rem;
   margin-bottom: 1rem;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.22);
 }
 
 .card h3 {
@@ -108,11 +155,16 @@ form input {
   width: 100%;
   max-width: 320px;
   margin-top: 0.35rem;
-  padding: 0.5rem 0.65rem;
+  padding: 0.55rem 0.75rem;
   border-radius: 6px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  background: var(--bg);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(7, 10, 18, 0.35);
   color: var(--text);
+}
+
+form input:focus-visible {
+  outline: 2px solid rgba(125, 211, 252, 0.65);
+  outline-offset: 2px;
 }
 
 form button[type="submit"],
@@ -121,15 +173,18 @@ form button[type="submit"],
   padding: 0.55rem 1rem;
   border-radius: var(--radius);
   border: none;
-  background: var(--accent);
-  color: #0a0f14;
+  background: linear-gradient(180deg, var(--accent), var(--accent-strong));
+  color: rgba(7, 10, 18, 0.9);
   font-weight: 600;
   cursor: pointer;
+  box-shadow: 0 10px 24px rgba(56, 189, 248, 0.18);
+  transition: transform 120ms ease, filter 120ms ease;
 }
 
 form button[type="submit"]:hover,
 .btn-add:hover {
-  background: var(--accent-hover);
+  filter: brightness(1.06);
+  transform: translateY(-1px);
 }
 
 .row {
@@ -150,10 +205,17 @@ form button[type="submit"]:hover,
 }
 
 .product {
-  background: var(--card);
-  border-radius: var(--radius);
+  background: var(--surface);
+  border-radius: var(--radius-lg);
   padding: 1rem;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: transform 120ms ease, border-color 120ms ease, background 120ms ease;
+}
+
+.product:hover {
+  transform: translateY(-2px);
+  border-color: rgba(125, 211, 252, 0.25);
+  background: var(--surface-strong);
 }
 
 .product h3 {
@@ -162,7 +224,7 @@ form button[type="submit"]:hover,
 }
 
 .product .price {
-  color: var(--accent);
+  color: rgba(125, 211, 252, 0.95);
   font-weight: 600;
   margin: 0 0 0.75rem;
 }
@@ -189,12 +251,18 @@ form button[type="submit"]:hover,
 
 .cart-list button {
   background: transparent;
-  border: 1px solid var(--danger);
+  border: 1px solid rgba(251, 113, 133, 0.8);
   color: var(--danger);
   border-radius: 6px;
   padding: 0.25rem 0.5rem;
   cursor: pointer;
   font-size: 0.8rem;
+  transition: background 120ms ease, border-color 120ms ease;
+}
+
+.cart-list button:hover {
+  background: rgba(251, 113, 133, 0.12);
+  border-color: rgba(251, 113, 133, 1);
 }
 
 .total {
@@ -203,11 +271,12 @@ form button[type="submit"]:hover,
 }
 
 .order {
-  background: var(--card);
-  border-radius: var(--radius);
+  background: var(--surface);
+  border-radius: var(--radius-lg);
   padding: 1rem;
   margin-bottom: 1rem;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.18);
 }
 
 .order .meta {
@@ -222,9 +291,23 @@ form button[type="submit"]:hover,
   right: 1.5rem;
   max-width: 280px;
   padding: 0.75rem 1rem;
-  background: var(--card);
-  border: 1px solid var(--accent);
-  border-radius: var(--radius);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  background: rgba(7, 10, 18, 0.65);
+  border: 1px solid rgba(125, 211, 252, 0.55);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(14px);
   font-size: 0.9rem;
+}
+
+@media (max-width: 640px) {
+  .header-inner {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .brand {
+    min-width: 0;
+  }
+  form input {
+    max-width: none;
+  }
 }
