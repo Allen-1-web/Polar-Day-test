@@ -64,6 +64,20 @@
     <section id="screen-catalog" class="screen" hidden>
       <h2>Каталог</h2>
       <p class="hint">Выберите товары и добавьте их в корзину.</p>
+      <div id="catalog-controls" class="catalog-controls">
+        <div class="catalog-filters-row">
+          <span class="catalog-filters-label">Категория</span>
+          <div id="catalog-filters" class="catalog-filters"></div>
+        </div>
+        <label class="catalog-sort-label">Сортировка
+          <select id="catalog-sort" class="catalog-sort">
+            <option value="order">Как в каталоге</option>
+            <option value="price-asc">Цена: сначала дешевле</option>
+            <option value="price-desc">Цена: сначала дороже</option>
+            <option value="name">По названию</option>
+          </select>
+        </label>
+      </div>
       <div id="catalog-list" class="catalog"></div>
     </section>
 

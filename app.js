@@ -14,11 +14,16 @@ const LS_CARD_PREFIX = "polar_day_card_"; // сохранённые реквиз
  * Каталог товаров — статичный массив.
  */
 const PRODUCTS = [
-  { id: "p1", name: "Куртка «Север»", price: 4990, note: "Утеплитель, ветрозащита" },
-  { id: "p2", name: "Шапка «Полярная»", price: 1290, note: "Шерсть, универсальный размер" },
-  { id: "p3", name: "Перчатки «Лёд»", price: 890, note: "Сенсорные пальцы" },
-  { id: "p4", name: "Свитер «Тундра»", price: 3490, note: "Вязаный, oversize" },
+  { id: "p1", name: "Куртка «Север»", price: 4990, note: "Утеплитель, ветрозащита", category: "Верхняя одежда" },
+  { id: "p2", name: "Шапка «Полярная»", price: 1290, note: "Шерсть, универсальный размер", category: "Головные уборы" },
+  { id: "p3", name: "Перчатки «Лёд»", price: 890, note: "Сенсорные пальцы", category: "Перчатки" },
+  { id: "p4", name: "Свитер «Тундра»", price: 3490, note: "Вязаный, oversize", category: "Трикотаж" },
 ];
+
+/** «Все» или строка категории — как в поле `category` у товара */
+let catalogCategory = "all";
+/** order | price-asc | price-desc | name */
+let catalogSort = "order";
 
 // --- Утилиты localStorage
 function readJson(key, fallback) {
@@ -241,11 +246,79 @@ function renderAccount() {
   profileCard.hidden = true;
 }
 
+function catalogCategoriesInOrder() {
+  const seen = new Set();
+  const list = [];
+  for (const p of PRODUCTS) {
+    const c = p.category;
+    if (c && !seen.has(c)) {
+      seen.add(c);
+      list.push(c);
+    }
+  }
+  return list;
+}
+
+function productCatalogIndex(id) {
+  return PRODUCTS.findIndex((x) => x.id === id);
+}
+
+function getFilteredSortedProducts() {
+  let list = PRODUCTS.filter((p) => catalogCategory === "all" || p.category === catalogCategory);
+  const arr = [...list];
+  if (catalogSort === "price-asc") arr.sort((a, b) => a.price - b.price);
+  else if (catalogSort === "price-desc") arr.sort((a, b) => b.price - a.price);
+  else if (catalogSort === "name") arr.sort((a, b) => a.name.localeCompare(b.name, "ru"));
+  else arr.sort((a, b) => productCatalogIndex(a.id) - productCatalogIndex(b.id));
+  return arr;
+}
+
+function bindCatalogControlsOnce() {
+  const box = document.getElementById("catalog-controls");
+  if (!box || box.dataset.bound === "1") return;
+  box.dataset.bound = "1";
+  box.addEventListener("click", (e) => {
+    const chip = e.target.closest("[data-catalog-cat]");
+    if (!chip) return;
+    catalogCategory = chip.getAttribute("data-catalog-cat") || "all";
+    renderCatalog();
+  });
+  const sortEl = document.getElementById("catalog-sort");
+  if (sortEl) {
+    sortEl.addEventListener("change", () => {
+      catalogSort = sortEl.value;
+      renderCatalog();
+    });
+  }
+}
+
+function renderCatalogFilterChips() {
+  const wrap = document.getElementById("catalog-filters");
+  if (!wrap) return;
+  wrap.innerHTML = "";
+  const mk = (cat, label) => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "nav-btn";
+    b.textContent = label;
+    b.dataset.catalogCat = cat;
+    b.classList.toggle("is-active", catalogCategory === cat);
+    wrap.appendChild(b);
+  };
+  mk("all", "Все");
+  catalogCategoriesInOrder().forEach((c) => mk(c, c));
+}
+
 /** Нарисовать каталог */
 function renderCatalog() {
+  bindCatalogControlsOnce();
+  renderCatalogFilterChips();
+  const sortEl = document.getElementById("catalog-sort");
+  if (sortEl) sortEl.value = catalogSort;
+
   const root = document.getElementById("catalog-list");
   root.innerHTML = "";
-  PRODUCTS.forEach((p) => {
+  getFilteredSortedProducts().forEach((p) => {
     const div = document.createElement("div");
     div.className = "product";
     div.innerHTML = `
