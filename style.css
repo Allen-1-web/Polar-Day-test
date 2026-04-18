@@ -198,6 +198,21 @@ form button[type="submit"]:hover,
   min-width: 120px;
 }
 
+form label.check {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  max-width: 320px;
+  cursor: pointer;
+}
+
+form label.check input {
+  width: auto;
+  max-width: none;
+  margin-top: 0.2rem;
+  flex-shrink: 0;
+}
+
 .catalog {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));

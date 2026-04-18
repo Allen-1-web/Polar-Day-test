@@ -8,6 +8,7 @@ const LS_USERS = "polar_day_users"; // { email: { password, ... } } — паро
 const LS_SESSION = "polar_day_session"; // email вошедшего пользователя или null
 const LS_CART_PREFIX = "polar_day_cart_"; // корзина на пользователя: polar_day_cart_email
 const LS_ORDERS_PREFIX = "polar_day_orders_"; // заказы: polar_day_orders_email
+const LS_CARD_PREFIX = "polar_day_card_"; // сохранённые реквизиты карты (учебный пример): polar_day_card_email
 
 /**
  * Каталог товаров — статичный массив.
@@ -124,6 +125,48 @@ function getOrders(email) {
 function saveOrders(email, orders) {
   if (!email) return;
   writeJson(ordersKey(email), orders);
+}
+
+function cardKey(email) {
+  return LS_CARD_PREFIX + email;
+}
+
+/** Сохранённые поля карты (без CVC). Номер — только цифры, как при оплате. */
+function getSavedCard(email) {
+  if (!email) return null;
+  const data = readJson(cardKey(email), null);
+  if (!isPlainObject(data)) return null;
+  return data;
+}
+
+function setSavedCard(email, data) {
+  if (!email) return;
+  if (!data) localStorage.removeItem(cardKey(email));
+  else writeJson(cardKey(email), data);
+}
+
+function formatCardDigits(digits) {
+  const d = String(digits || "").replace(/\D/g, "").slice(0, 19);
+  const parts = [];
+  for (let i = 0; i < d.length; i += 4) parts.push(d.slice(i, i + 4));
+  return parts.join(" ");
+}
+
+function applySavedCardToPayForm() {
+  const email = getSessionEmail();
+  const form = document.getElementById("form-pay");
+  if (!form || !email) return;
+  const saved = getSavedCard(email);
+  const cb = form.querySelector('[name="saveCard"]');
+  if (saved && saved.holder && saved.card && saved.exp) {
+    form.holder.value = saved.holder;
+    form.card.value = formatCardDigits(saved.card);
+    form.exp.value = saved.exp;
+    form.cvc.value = "";
+    if (cb) cb.checked = true;
+  } else {
+    if (cb) cb.checked = false;
+  }
 }
 
 // --- UI: всплывающее сообщение
@@ -294,6 +337,7 @@ function renderCart() {
   });
 
   totalEl.textContent = String(total);
+  applySavedCardToPayForm();
 }
 
 function removeLine(email, productId) {
@@ -349,7 +393,11 @@ function handlePaySubmit(e) {
   orders.unshift(order); // новые сверху
   saveOrders(email, orders);
   saveCart(email, []);
+  if (form.saveCard && form.saveCard.checked) {
+    setSavedCard(email, { holder, card, exp });
+  }
   form.reset();
+  applySavedCardToPayForm();
   showToast("Заказ оформлен");
   renderCart();
   renderHistory();
