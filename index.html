@@ -92,11 +92,19 @@
           <h3>Оформление заказа</h3>
           <p class="hint">Это демо-форма, списаний не будет.</p>
           <form id="form-pay">
-            <label>Имя на карте <input type="text" name="holder" required placeholder="ИВАН ИВАНОВ" /></label>
-            <label>Номер карты <input type="text" name="card" required inputmode="numeric" placeholder="0000 0000 0000 0000" maxlength="19" /></label>
+            <label>Имя на карте
+              <input id="pay-holder" type="text" name="holder" required placeholder="ИВАН ИВАНОВ" autocomplete="cc-name" autocapitalize="characters" spellcheck="false" />
+            </label>
+            <label>Номер карты
+              <input id="pay-card" type="text" name="card" required inputmode="numeric" placeholder="0000 0000 0000 0000" maxlength="19" autocomplete="cc-number" />
+            </label>
             <div class="row">
-              <label>Срок <input type="text" name="exp" required placeholder="MM/YY" maxlength="5" /></label>
-              <label>CVC <input type="password" name="cvc" required placeholder="123" maxlength="4" /></label>
+              <label>Срок
+                <input id="pay-exp" type="text" name="exp" required placeholder="MM/YY" maxlength="5" inputmode="numeric" autocomplete="cc-exp" />
+              </label>
+              <label>CVC
+                <input id="pay-cvc" type="password" name="cvc" required placeholder="123" maxlength="4" inputmode="numeric" autocomplete="cc-csc" />
+              </label>
             </div>
             <label class="check"><input type="checkbox" name="saveCard" /> Сохранить карту для следующих покупок</label>
             <button type="submit">Оплатить и оформить заказ</button>
