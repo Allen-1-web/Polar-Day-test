@@ -122,6 +122,21 @@
     </div>
   </main>
 
+  <dialog id="confirm-pay" class="modal" aria-labelledby="confirm-pay-title">
+    <form method="dialog" class="modal-card">
+      <h3 id="confirm-pay-title" style="margin-top:0">Подтвердите покупку</h3>
+      <p class="hint" style="margin-top:0">Проверьте заказ перед оформлением.</p>
+      <div class="modal-summary">
+        <div class="modal-lines" id="confirm-pay-lines"></div>
+        <p class="total" style="margin:0.75rem 0 0">Итого: <strong id="confirm-pay-total">0</strong> ₽</p>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="nav-btn" id="confirm-pay-cancel">Отменить</button>
+        <button type="submit" class="modal-primary" id="confirm-pay-accept" value="confirm">Подтвердить</button>
+      </div>
+    </form>
+  </dialog>
+
   <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
 
   <script src="app.js"></script>

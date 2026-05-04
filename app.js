@@ -420,8 +420,58 @@ function removeLine(email, productId) {
   showToast("Товар убран");
 }
 
+function bindPayConfirmDialogOnce() {
+  const dlg = document.getElementById("confirm-pay");
+  if (!dlg || dlg.dataset.bound === "1") return;
+  dlg.dataset.bound = "1";
+
+  const btnCancel = document.getElementById("confirm-pay-cancel");
+  if (btnCancel) {
+    btnCancel.addEventListener("click", () => {
+      if (typeof dlg.close === "function") dlg.close("cancel");
+    });
+  }
+}
+
+function openPayConfirmDialog({ items, total }) {
+  const dlg = document.getElementById("confirm-pay");
+  const linesEl = document.getElementById("confirm-pay-lines");
+  const totalEl = document.getElementById("confirm-pay-total");
+
+  // Фоллбек, если <dialog> не поддерживается
+  if (!dlg || typeof dlg.showModal !== "function" || typeof dlg.close !== "function") {
+    const preview = (items || [])
+      .slice(0, 6)
+      .map((i) => `${i.name} × ${i.qty}`)
+      .join("\n");
+    const more = (items || []).length > 6 ? `\n…и ещё ${(items || []).length - 6}` : "";
+    const ok = window.confirm(`Подтвердить покупку на сумму ${total} ₽?\n\n${preview}${more}`);
+    return Promise.resolve(ok);
+  }
+
+  bindPayConfirmDialogOnce();
+  if (linesEl) {
+    linesEl.innerHTML = "";
+    (items || []).forEach((i) => {
+      const row = document.createElement("div");
+      row.textContent = `${i.name} × ${i.qty} — ${i.lineTotal} ₽`;
+      linesEl.appendChild(row);
+    });
+  }
+  if (totalEl) totalEl.textContent = String(total || 0);
+
+  return new Promise((resolve) => {
+    const onClose = () => {
+      dlg.removeEventListener("close", onClose);
+      resolve(dlg.returnValue === "confirm");
+    };
+    dlg.addEventListener("close", onClose);
+    dlg.showModal();
+  });
+}
+
 /** Оплата: упрощённая проверка полей, сохранение заказа, очистка корзины */
-function handlePaySubmit(e) {
+async function handlePaySubmit(e) {
   e.preventDefault();
   const email = getSessionEmail();
   if (!email) {
@@ -454,6 +504,12 @@ function handlePaySubmit(e) {
     total += lineTotal;
     return { name: p.name, price: p.price, qty: row.qty, lineTotal };
   }).filter(Boolean);
+
+  const confirmed = await openPayConfirmDialog({ items: snapshot, total });
+  if (!confirmed) {
+    showToast("Покупка отменена");
+    return;
+  }
 
   const order = {
     id: "ord_" + Date.now(),
